@@ -1,61 +1,53 @@
-import React from "react";
+import {useState, useEffect, useRef} from "react";
 import PropTypes from 'prop-types';
 import "./charList.scss";
 import ApiRequestService from "../../services/ApiRequestService";
 
-class CharList extends React.Component {
-  state = {
-    allChars: [],
-    allCharsOffset: 210,
-    loadButtonDisabled: false,
-    charEnded: false,
-  };
+const CharList = (props) => {
+  
+  const [allChars, setAllChars] = useState([]);
+  const [allCharsOffset, setAllCharsOffset] = useState(210);
+  const [loadButtonDisabled, setLoadButtonDisabled] = useState(false);
+  const [charEnded, setCharEnded] = useState(false);
 
-  apiRequestService = new ApiRequestService();
+  const apiRequestService = new ApiRequestService();
 
-  getAllChars = (offset) => {
-    this.onLoadingMore();
-    this.apiRequestService.getAllCharacters(offset)
+  const getAllChars = (offset) => {
+    onLoadingMore();
+    apiRequestService.getAllCharacters(offset)
     .then((res) => {
       //hide load button when api returned final chars
       if(res.length < 9) {
-        this.setState({
-          charEnded: true
-        })
+        setCharEnded(true);
       }
 
-      this.setState(({allChars, allCharsOffset}) => ({
-        allChars: [...allChars, ...res],
-        allCharsOffset: allCharsOffset + 9
-      }));
-      this.onLoadingMore();
+      setAllChars([...allChars, ...res]);
+      setAllCharsOffset(allCharsOffset => allCharsOffset + 9)
+
+      onLoadingMore();
     });
   };
 
-  onLoadingMore = () => {
-    this.setState(state => ({
-      loadButtonDisabled: !state.loadButtonDisabled
-    }))
+  const onLoadingMore = () => {
+    setLoadButtonDisabled(loadButtonDisabled => !loadButtonDisabled)
   }
 
-  componentDidMount() {
-    this.getAllChars(this.state.allCharsOffset);
+  useEffect(() => {
+    getAllChars(allCharsOffset)
+  }, []);
+
+
+    const itemRefs = useRef([]);
+
+
+   const focusOnItem = (id) => {
+    itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+    itemRefs.current[id].classList.add('char__item_selected');
+    itemRefs.current[id].focus();
   }
 
-    itemRefs = [];
-
-    setRef = (ref) => {
-        this.itemRefs.push(ref);
-    }
-
-    focusOnItem = (id) => {
-      this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
-      this.itemRefs[id].classList.add('char__item_selected');
-      this.itemRefs[id].focus();
-  }
-
-  render() {
-    const allCharsList = this.state.allChars.map((char, i) => {
+  
+    const allCharsList = allChars.map((char, i) => {
       const word = char.thumbnail;
       return (
         <li
@@ -64,17 +56,17 @@ class CharList extends React.Component {
           }`}
           key={char.id}
           onClick={() => {
-            this.props.setCharId(char.id);
-            this.focusOnItem(i)
+            props.setCharId(char.id);
+            focusOnItem(i)
           }}
           onKeyPress={(e) => {
               if (e.key === ' ' || e.key === "Enter") {
-                  this.props.setCharId(char.id);
-                  this.focusOnItem(i);
+                  props.setCharId(char.id);
+                  focusOnItem(i);
               }
           }}
           tabIndex={0}
-          ref={this.setRef}
+          ref={el => itemRefs.current[i] = el}
         >
           <img src={char.thumbnail} alt={char.name} />
           <div className="char__name">{char.name}</div>
@@ -86,14 +78,13 @@ class CharList extends React.Component {
         <ul className="char__grid">{allCharsList}</ul>
         <button 
           className="button button__main button__long" 
-          disabled={this.state.loadButtonDisabled} 
-          style={{'display': this.state.charEnded ? 'none' : 'block'}}
+          disabled={loadButtonDisabled} 
+          style={{'display': charEnded ? 'none' : 'block'}}
         >
-          <div className="inner" onClick={() => this.getAllChars(this.state.allCharsOffset)}>load more</div>
+          <div className="inner" onClick={() => getAllChars(allCharsOffset)}>load more</div>
         </button>
       </div>
     );
-  }
 }
 
 CharList.propTypes = {

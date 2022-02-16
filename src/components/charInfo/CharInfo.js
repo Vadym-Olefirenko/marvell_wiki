@@ -1,4 +1,4 @@
-import React from "react";
+import {useState, useEffect, useRef} from "react";
 import PropTypes from 'prop-types';
 import "./charInfo.scss";
 import Error from "../error/Error";
@@ -7,43 +7,36 @@ import Skeleton from "../skeleton/Skeleton";
 import ApiRequestService from "../../services/ApiRequestService";
 
 
-class CharInfo extends React.Component {
-  state = {
-    loading: false,
-    error: false,
-    char: null,
-  };
+const CharInfo = (props) =>{
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [char, setChar] = useState(null);
 
-  apiRequestService = new ApiRequestService();
-  componentDidUpdate(prevProps){
-      if(prevProps.selectedCharId !== this.props.selectedCharId) {
-          this.setSelectedChar()
-      }
-  }
+  const apiRequestService = new ApiRequestService();
 
-  setSelectedChar = () => {
-    this.setState({
-      loading: true,
-    });
-    this.apiRequestService
-      .getRandomCharacter(this.props.selectedCharId)
+  useEffect(() => {
+    setSelectedChar(); 
+  }, [props.selectedCharId])
+
+
+  const setSelectedChar = () => {
+    if (!props.selectedCharId) return;
+    setLoading(true);
+   
+    apiRequestService
+      .getRandomCharacter(props.selectedCharId)
       .then((res) => {
-        this.setState({
-          char: res,
-          loading: false,
-        });
+        setChar(res);
+        setLoading(false);
       })
       .catch((err) => {
-        this.setState({
-          loading: false,
-          error: true,
-        });
+        setLoading(false);
+        setError(true);
       });
   };
 
 
-  render() {
-      const {char, loading, error} = this.state;
       const showView = !(loading || error || !char) ? <View char={char} /> : null;
       const showSkeleton = !(loading || error || char) ? <Skeleton/> : null;
       const showSpinner = loading ? <Spinner/> : null;
@@ -56,7 +49,6 @@ class CharInfo extends React.Component {
         {showSpinner}
       </div>
     );
-  }
 }
 
 const View = ({char}) => {

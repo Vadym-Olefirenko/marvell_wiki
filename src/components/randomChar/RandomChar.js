@@ -1,49 +1,41 @@
-import React from "react";
+import {useState, useEffect} from "react";
 import "./randomChar.scss";
 import ApiRequestService from "../../services/ApiRequestService";
 import Spinner from "../spinner/Spinner";
 import Error from "../error/Error";
 import mjolnir from "../../resources/img/mjolnir.png";
 
-class RandomChar extends React.Component {
-  
-  state = {
-    char: {},
-    loading: true,
-    error: false
-  };
+const RandomChar = () => {
+ 
+  const [char, setChar] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  apiRequestService = new ApiRequestService();
+  const apiRequestService = new ApiRequestService();
 
-  componentDidMount() {
-    this.showRandomCharacter();
-  }
+  useEffect(() => {
+    showRandomCharacter();
+  }, [])
 
-
-
-  showRandomCharacter = () => {
+  const showRandomCharacter = () => {
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
     //show spinner before char load
-    this.setState({loading: true})
+    setLoading(true);
     //get random char
-    this.apiRequestService.getRandomCharacter(id)
-        .then((res) =>
-            this.setState({
-                char: res,
-                loading: false,
-            })
-        )
-        .catch(err => 
-            this.setState({
-                loading: false,
-                error: true
-            })
-        )
+    apiRequestService.getRandomCharacter(id)
+        .then((res) => {
+          setChar(res)
+          setLoading(false)
+        })
+        .catch(err => {
+            setLoading(false);
+            setError(true)
+          })
   };
-  render() {
-    const showSpiner = this.state.loading ? <Spinner /> : null;
-    const showError = this.state.error ? <Error/> : null;
-    const content = !(showSpiner || showError) ? <StaticBlock char={this.state.char}/> : null
+  
+    const showSpiner = loading ? <Spinner /> : null;
+    const showError = error ? <Error/> : null;
+    const content = !(showSpiner || showError) ? <StaticBlock char={char}/> : null
     return (
       <div className="randomchar">
         {showSpiner}
@@ -57,7 +49,7 @@ class RandomChar extends React.Component {
           </p>
           <p className="randomchar__title">Or choose another one</p>
           <button className="button button__main">
-            <div onClick={this.showRandomCharacter} className="inner">
+            <div onClick={showRandomCharacter} className="inner">
               try it
             </div>
           </button>
@@ -65,7 +57,6 @@ class RandomChar extends React.Component {
         </div>
       </div>
     );
-  }
 }
 
 const StaticBlock = (props) => {
