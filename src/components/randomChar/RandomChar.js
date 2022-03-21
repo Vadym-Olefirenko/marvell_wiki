@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import "./randomChar.scss";
-import ApiRequestService from "../../services/ApiRequestService";
+import useApiRequestService from "../../services/ApiRequestService";
 import Spinner from "../spinner/Spinner";
 import Error from "../error/Error";
 import mjolnir from "../../resources/img/mjolnir.png";
@@ -8,29 +8,23 @@ import mjolnir from "../../resources/img/mjolnir.png";
 const RandomChar = () => {
  
   const [char, setChar] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  
 
-  const apiRequestService = new ApiRequestService();
+  const {loading, error, getRandomCharacter, clearError} = useApiRequestService();
 
   useEffect(() => {
     showRandomCharacter();
   }, [])
+  
 
   const showRandomCharacter = () => {
+    clearError();
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    //show spinner before char load
-    setLoading(true);
     //get random char
-    apiRequestService.getRandomCharacter(id)
+    getRandomCharacter(id)
         .then((res) => {
           setChar(res)
-          setLoading(false)
         })
-        .catch(err => {
-            setLoading(false);
-            setError(true)
-          })
   };
   
     const showSpiner = loading ? <Spinner /> : null;
@@ -60,14 +54,14 @@ const RandomChar = () => {
 }
 
 const StaticBlock = (props) => {
-  const word = props.char.thumbnail;
+  const noImageStyle = props.char.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? ' randomchar__img-not-available' : '';
   
   return (
     <div className="randomchar__block">
       <img
         src={props.char.thumbnail}
         alt="Random character"
-        className={`randomchar__img ${word.includes('image_not_available.jpg') ? ' randomchar__img-not-available' : ''}`}
+        className={`randomchar__img ${noImageStyle}`}
       />
       <div className="randomchar__info">
         <p className="randomchar__name">{props.char.name}</p>

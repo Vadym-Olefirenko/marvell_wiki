@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef} from "react";
 import PropTypes from 'prop-types';
 import "./charList.scss";
-import ApiRequestService from "../../services/ApiRequestService";
+import useApiRequestService from "../../services/ApiRequestService";
 
 const CharList = (props) => {
   
@@ -10,7 +10,7 @@ const CharList = (props) => {
   const [loadButtonDisabled, setLoadButtonDisabled] = useState(false);
   const [charEnded, setCharEnded] = useState(false);
 
-  const apiRequestService = new ApiRequestService();
+  const apiRequestService = useApiRequestService();
 
   const getAllChars = (offset) => {
     onLoadingMore();

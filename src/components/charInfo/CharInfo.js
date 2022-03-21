@@ -1,19 +1,17 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect} from "react";
 import PropTypes from 'prop-types';
 import "./charInfo.scss";
 import Error from "../error/Error";
 import Spinner from "../spinner/Spinner";
 import Skeleton from "../skeleton/Skeleton";
-import ApiRequestService from "../../services/ApiRequestService";
+import useApiRequestService from "../../services/ApiRequestService";
 
 
 const CharInfo = (props) =>{
   
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [char, setChar] = useState(null);
 
-  const apiRequestService = new ApiRequestService();
+  const {loading, error, getRandomCharacter, clearError} = useApiRequestService();
 
   useEffect(() => {
     setSelectedChar(); 
@@ -22,18 +20,11 @@ const CharInfo = (props) =>{
 
   const setSelectedChar = () => {
     if (!props.selectedCharId) return;
-    setLoading(true);
-   
-    apiRequestService
-      .getRandomCharacter(props.selectedCharId)
+    clearError();
+    getRandomCharacter(props.selectedCharId)
       .then((res) => {
         setChar(res);
-        setLoading(false);
       })
-      .catch((err) => {
-        setLoading(false);
-        setError(true);
-      });
   };
 
 
