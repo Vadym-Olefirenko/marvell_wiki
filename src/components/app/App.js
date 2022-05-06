@@ -28,7 +28,7 @@ const App = () => {
                         <SinglePage Layout={SingleComicLayout} dataType='comics'/>
                     </Route>
                     <Route path="/characters/:itemID" exact>
-                        <SinglePage Layout={SingleCharacterLayout} dataType='character'/>
+                        <SinglePage Layout={SingleCharacterLayout} dataType='characters'/>
                     </Route>
                     <Route path="*">
                         <Page404/>
