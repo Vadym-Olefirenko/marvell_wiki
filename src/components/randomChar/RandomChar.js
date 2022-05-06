@@ -54,8 +54,12 @@ const RandomChar = () => {
 }
 
 const StaticBlock = (props) => {
+  const slicer = (str) => {
+    if (str !== undefined) return str.slice(0, 210) + '...'
+  }
+  console.log(props.char.description);
   const noImageStyle = props.char.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? ' randomchar__img-not-available' : '';
-  
+  const description =  props.char.description === '' ? 'here is no description for this character' : slicer(props.char.description);
   return (
     <div className="randomchar__block">
       <img
@@ -65,7 +69,7 @@ const StaticBlock = (props) => {
       />
       <div className="randomchar__info">
         <p className="randomchar__name">{props.char.name}</p>
-        <p className="randomchar__descr">{props.char.description}</p>
+        <p className="randomchar__descr">{description}</p>
         <div className="randomchar__btns">
           <a href={props.char.homepage} className="button button__main">
             <div className="inner">homepage</div>

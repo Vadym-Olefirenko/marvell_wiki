@@ -3,6 +3,7 @@ import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundry from "../errorBoundry/ErrorBoundry";
+import CharSearchForm from "../charSearchForm/CharSearchForm";
 
 const MainPage = () => {
     const [charId, setCharId] = useState(null);
@@ -15,9 +16,14 @@ const MainPage = () => {
             <RandomChar/>
             <div className="char__content">
                 <CharList setCharId={onSetCharId}/>
-                <ErrorBoundry>
-                    <CharInfo selectedCharId={charId}/>
-                </ErrorBoundry>
+                <div className="sticky__block">
+                    <ErrorBoundry>
+                        <CharInfo selectedCharId={charId}/>
+                    </ErrorBoundry>
+                    <ErrorBoundry>
+                        <CharSearchForm/>
+                    </ErrorBoundry>
+                </div>
             </div>
         </>
     )
