@@ -5,7 +5,6 @@ import useApiRequestService from "../../services/ApiRequestService";
 import Spinner from "../spinner/Spinner";
 import Error from "../error/Error";
 import AppBanner from '../appBanner/AppBanner';
-import SingleComicLayout from '../layouts/singleComicLayout/singleComicLayout';
 
 const SinglePage = ({Layout, dataType}) => {
     const [char, setChar] = useState(null);
