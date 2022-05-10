@@ -4,7 +4,7 @@ const useApiRequestService = () => {
     const _apiUrl = 'https://gateway.marvel.com:443/v1/public/';
     const _apiKey = 'apikey=76b879cfd37956e8d26b336ee9c302df';
 
-    const {loading, error, request, clearError} = useHttp();
+    const {request, clearError, process, setProcess} = useHttp();
 
     const getAllCharacters = async (offset) => {
         const res = await request(`${_apiUrl}characters?limit=9&offset=${offset}&${_apiKey}`);
@@ -56,7 +56,7 @@ const useApiRequestService = () => {
             price: comics.prices.price ? `${comics.prices.price}$` : 'not available'
         }
     }
-    return {loading, error, getAllCharacters, getRandomCharacter, clearError, getAllComics, getComics, getCharacterByName};
+    return {getAllCharacters, getRandomCharacter, clearError, getAllComics, getComics, getCharacterByName, process, setProcess};
 }
 
 export default useApiRequestService;

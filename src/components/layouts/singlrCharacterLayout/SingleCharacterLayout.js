@@ -1,20 +1,20 @@
 import {Helmet} from "react-helmet";
 import './singleCharacter.scss';
 
-const SingleCharacterLayout = ({item}) => {
+const SingleCharacterLayout = ({data}) => {
     return (
         <div className="single-comic">
             <Helmet>
-                <title>{item.name}</title>
+                <title>{data.name}</title>
                 <meta
                     name="description"
-                    content={`${item.name} page`}
+                    content={`${data.name} page`}
                 />
             </Helmet>
-            <img src={item.thumbnail} alt="x-men" className="single-comic__img"/>
+            <img src={data.thumbnail} alt="x-men" className="single-comic__img"/>
             <div className="single-comic__info">
-                <h2 className="single-comic__name">{item.name}</h2>
-                <p className="single-comic__descr">{item.description === '' ? 'Here is no description for this character' : item.description}</p>
+                <h2 className="single-comic__name">{data.name}</h2>
+                <p className="single-comic__descr">{data.description === '' ? 'Here is no description for this character' : data.description}</p>
             </div>
         </div>
     )

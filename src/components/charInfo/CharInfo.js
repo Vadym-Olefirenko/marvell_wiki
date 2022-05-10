@@ -1,20 +1,19 @@
 import {useState, useEffect} from "react";
 import PropTypes from 'prop-types';
 import "./charInfo.scss";
-import Error from "../error/Error";
-import Spinner from "../spinner/Spinner";
-import Skeleton from "../skeleton/Skeleton";
 import useApiRequestService from "../../services/ApiRequestService";
+import setContent from "../../utils/setContent";
 
 
 const CharInfo = (props) =>{
   
   const [char, setChar] = useState(null);
 
-  const {loading, error, getRandomCharacter, clearError} = useApiRequestService();
+  const {getRandomCharacter, clearError, process, setProcess} = useApiRequestService();
 
   useEffect(() => {
-    setSelectedChar(); 
+    setSelectedChar();
+    // eslint-disable-next-line
   }, [props.selectedCharId])
 
 
@@ -25,50 +24,43 @@ const CharInfo = (props) =>{
       .then((res) => {
         setChar(res);
       })
+      .then(()=> setProcess('confirmed'))
   };
 
-
-      const showView = !(loading || error || !char) ? <View char={char} /> : null;
-      const showSkeleton = !(loading || error || char) ? <Skeleton/> : null;
-      const showSpinner = loading ? <Spinner/> : null;
-      const showError = error ? <Error/> : null;
     return (
       <div className="char__info">
-        {showView}
-        {showSkeleton}
-        {showError}
-        {showSpinner}
+        {setContent(process, View, char)} 
       </div>
     );
 }
 
-const View = ({char}) => {
-    const word = char.thumbnail;
+const View = ({data}) => {
+    const word = data.thumbnail;
   return (
     <>
       <div className={`char__basics${word.includes('image_not_available.jpg') ? ' no-image' : ''}`}>
-        <img src={char.thumbnail} alt={char.name} />
+        <img src={data.thumbnail} alt={data.name} />
         <div>
-          <div className="char__info-name">{char.name}</div>
+          <div className="char__info-name">{data.name}</div>
           <div className="char__btns">
-            <a href={char.homepage} className="button button__main">
+            <a href={data.homepage} className="button button__main">
               <div className="inner">Homepage</div>
             </a>
-            <a href={char.wiki} className="button button__secondary">
+            <a href={data.wiki} className="button button__secondary">
               <div className="inner">Wiki</div>
             </a>
           </div>
         </div>
       </div>
       <div className="char__descr">
-        {char.description}
+        {data.description}
       </div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-          {char.comics.length === 0 ? 'There are no comics with this charachter' : null}
+          {data.comics.length === 0 ? 'There are no comics with this charachter' : null}
           
           {
-              char.comics.slice(0, 9).map((item, i) => {
+              data.comics.slice(0, 9).map((item, i) => {
                return (
                 <li className="char__comics-item" key={i}>
                     {item.name}

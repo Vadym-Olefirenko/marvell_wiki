@@ -10,7 +10,7 @@ import './CharSearchForm.scss';
 const CharSearchForm = () => {
     const [char, setChar] = useState('');
     const [link, setCharLink] = useState(null);
-    const {loading, error, getCharacterByName, clearError} = useApiRequestService();
+    const {getCharacterByName, clearError, process, setProcess} = useApiRequestService();
 
     const findCharacter = (name) => {
         clearError();
@@ -21,10 +21,11 @@ const CharSearchForm = () => {
             const charLink = res.length !== 0 ? '/characters/' + res[0].id : null;
             setChar(charName);
             setCharLink(charLink);
-        });
+        })
+        .then(() => setProcess('confirmed'))
     }
 
-    const errorMessage = error ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
+    const errorMessage = process === 'error' ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
     const searchResult = char === '' ? null : char !== null ? 
                         <div className="char__search-wrapper">
                             <div className="char__search-success">There is! Visit {char} page?</div>
@@ -60,7 +61,7 @@ const CharSearchForm = () => {
                         <button 
                             type='submit' 
                             className="button button__main"
-                            disabled={loading}
+                            disabled={process === 'loading'}
                         >
                             <div className="inner">find</div>
                         </button>

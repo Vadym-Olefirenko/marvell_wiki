@@ -11,7 +11,7 @@ const ComicsList = () => {
     const [loadButtonDisabled, setLoadButtonDisabled] = useState(false);
     const [charEnded, setCharEnded] = useState(false);
 
-    const {getAllComics, loading} = useApiRequestService();
+    const {getAllComics, process, setProcess} = useApiRequestService();
 
     const getAllComs = (offset) => {
         onLoadingMore();
@@ -24,6 +24,7 @@ const ComicsList = () => {
                 setOffset(offset => offset + 8);
                 onLoadingMore();
             })
+            .then(() => setProcess('confirmed'));
     }
 
     const onLoadingMore = () => {
@@ -49,7 +50,7 @@ const ComicsList = () => {
             </li>
         )
     })
-    const showSpinner = loading ? <Spinner/> : null;
+    const showSpinner = process === 'loading' ? <Spinner/> : null;
     return (
         
         <div className="comics__list">

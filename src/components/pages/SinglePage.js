@@ -5,11 +5,12 @@ import useApiRequestService from "../../services/ApiRequestService";
 import Spinner from "../spinner/Spinner";
 import Error from "../error/Error";
 import AppBanner from '../appBanner/AppBanner';
+import setContent from '../../utils/setContent';
 
 const SinglePage = ({Layout, dataType}) => {
     const [char, setChar] = useState(null);
     const {itemID} = useParams();
-    const {getComics, getRandomCharacter, loading, error, clearError} = useApiRequestService();
+    const {getComics, getRandomCharacter, clearError, process, setProcess} = useApiRequestService();
 
     useEffect(() => {
         getItemInfo();
@@ -21,15 +22,11 @@ const SinglePage = ({Layout, dataType}) => {
         switch (dataType) {
             case 'comics':
                 getComics(itemID)
-                    .then((res) => {
-                        setChar(res);
-                    })
+                    .then((res) => setChar(res)).then(() => setProcess('confirmed'));
                 break;
             case 'character':
                 getRandomCharacter(itemID)
-                    .then((res) => {
-                        setChar(res);
-                    })
+                    .then((res) => setChar(res)).then(() => setProcess('confirmed'));
                 break;
         
             default: 
@@ -38,15 +35,10 @@ const SinglePage = ({Layout, dataType}) => {
 
     }
     
-    const showView = !(char === null || loading) ? <Layout item={char}/> : null;
-    const showLoading = (loading) ? <Spinner/> : null;
-    const showError = error ? <Error/> : null;
     return (
        <>
        <AppBanner/>
-       {showView}
-       {showLoading}
-       {showError}
+       {setContent(process, Layout, char)}
        </>
     )
 }

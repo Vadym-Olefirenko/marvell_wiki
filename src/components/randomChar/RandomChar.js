@@ -1,8 +1,7 @@
 import {useState, useEffect} from "react";
 import "./randomChar.scss";
 import useApiRequestService from "../../services/ApiRequestService";
-import Spinner from "../spinner/Spinner";
-import Error from "../error/Error";
+import setContent from "../../utils/setContent";
 import mjolnir from "../../resources/img/mjolnir.png";
 
 const RandomChar = () => {
@@ -10,10 +9,11 @@ const RandomChar = () => {
   const [char, setChar] = useState({});
   
 
-  const {loading, error, getRandomCharacter, clearError} = useApiRequestService();
+  const {getRandomCharacter, clearError, process, setProcess} = useApiRequestService();
 
   useEffect(() => {
     showRandomCharacter();
+    // eslint-disable-next-line
   }, [])
   
 
@@ -25,16 +25,12 @@ const RandomChar = () => {
         .then((res) => {
           setChar(res)
         })
+        .then(() => setProcess('confirmed'))
   };
   
-    const showSpiner = loading ? <Spinner /> : null;
-    const showError = error ? <Error/> : null;
-    const content = !(showSpiner || showError) ? <StaticBlock char={char}/> : null
     return (
       <div className="randomchar">
-        {showSpiner}
-        {showError}
-        {content}
+        {setContent(process, StaticBlock, char)}
         <div className="randomchar__static">
           <p className="randomchar__title">
             Random character for today!
@@ -53,28 +49,28 @@ const RandomChar = () => {
     );
 }
 
-const StaticBlock = (props) => {
+const StaticBlock = ({data}) => {
   const slicer = (str) => {
     if (str !== undefined) return str.slice(0, 210) + '...'
   }
-  console.log(props.char.description);
-  const noImageStyle = props.char.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? ' randomchar__img-not-available' : '';
-  const description =  props.char.description === '' ? 'here is no description for this character' : slicer(props.char.description);
+
+  const noImageStyle = data.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? ' randomchar__img-not-available' : '';
+  const description =  data.description === '' ? 'here is no description for this character' : slicer(data.description);
   return (
     <div className="randomchar__block">
       <img
-        src={props.char.thumbnail}
+        src={data.thumbnail}
         alt="Random character"
         className={`randomchar__img ${noImageStyle}`}
       />
       <div className="randomchar__info">
-        <p className="randomchar__name">{props.char.name}</p>
+        <p className="randomchar__name">{data.name}</p>
         <p className="randomchar__descr">{description}</p>
         <div className="randomchar__btns">
-          <a href={props.char.homepage} className="button button__main">
+          <a href={data.homepage} className="button button__main">
             <div className="inner">homepage</div>
           </a>
-          <a href={props.char.wiki} className="button button__secondary">
+          <a href={data.wiki} className="button button__secondary">
             <div className="inner">Wiki</div>
           </a>
         </div>
